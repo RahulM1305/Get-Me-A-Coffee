@@ -3,6 +3,8 @@ const { Schema, model } = mongoose;
 
 const UserSchema = new Schema({
     email: { type: String, required: true },
+    // Only set for email/password accounts; excluded from queries by default
+    password: { type: String, select: false },
     name: { type: String},
     username: { type: String, required: true },
     profilepic: {type: String},

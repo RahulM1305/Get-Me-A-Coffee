@@ -2,6 +2,403 @@
 @tailwind components;
 @tailwind utilities;
 
-.invertImg{
-    filter: invert(0.23)
+/* ────────────────────────────────────────────────────────────────
+   Design tokens
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  --cream: #faf6ee;
+  --paper: #fffdf7;
+  --ink: #221a12;
+  --ink-soft: #4a3f33;
+  --mocha: #7a6a58;
+  --latte: #e9dfce;
+  --latte-dark: #d8cbb4;
+  --roast: #d4551e;
+  --roast-dark: #b54312;
+  --roast-light: #f7e4d4;
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ────────────────────────────────────────────────────────────────
+   Base
+   ──────────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--cream);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--roast);
+  color: var(--paper);
+}
+
+/* Faint paper grain over everything — keeps flat colors from
+   feeling sterile. Sits below the nav/toasts. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.13 0 0 0 0 0.10 0 0 0 0 0.07 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ────────────────────────────────────────────────────────────────
+   Buttons
+   ──────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  white-space: nowrap;
+  transition:
+    transform 0.25s var(--ease-out-soft),
+    box-shadow 0.25s var(--ease-out-soft),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+.btn:hover {
+  transform: translateY(-2px);
+}
+.btn:active {
+  transform: translateY(0) scale(0.98);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-ink {
+  background: var(--ink);
+  color: var(--cream);
+}
+.btn-ink:hover {
+  box-shadow: 0 10px 24px -8px rgba(34, 26, 18, 0.45);
+}
+
+.btn-roast {
+  background: var(--roast);
+  color: #fff8f0;
+}
+.btn-roast:hover {
+  background: var(--roast-dark);
+  box-shadow: 0 10px 24px -8px rgba(181, 67, 18, 0.5);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--latte-dark);
+}
+.btn-outline:hover {
+  border-color: var(--ink);
+  background: var(--paper);
+}
+
+/* Arrow that nudges right on button hover */
+.btn .btn-arrow {
+  transition: transform 0.25s var(--ease-out-soft);
+}
+.btn:hover .btn-arrow {
+  transform: translateX(3px);
+}
+
+/* ────────────────────────────────────────────────────────────────
+   Forms
+   ──────────────────────────────────────────────────────────────── */
+.field {
+  width: 100%;
+  background: var(--paper);
+  border: 1.5px solid var(--latte);
+  border-radius: 0.75rem;
+  color: var(--ink);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.field::placeholder {
+  color: var(--mocha);
+  opacity: 0.6;
+}
+.field:focus {
+  outline: none;
+  border-color: var(--roast);
+  box-shadow: 0 0 0 4px rgba(212, 85, 30, 0.12);
+}
+
+/* ────────────────────────────────────────────────────────────────
+   Common pieces
+   ──────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--paper);
+  border: 1px solid var(--latte);
+  border-radius: 1.25rem;
+}
+
+.card-hover {
+  transition:
+    transform 0.3s var(--ease-out-soft),
+    box-shadow 0.3s var(--ease-out-soft),
+    border-color 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 2px 4px rgba(34, 26, 18, 0.06), 0 18px 44px -12px rgba(34, 26, 18, 0.18);
+  border-color: var(--latte-dark);
+}
+
+/* Small mono, uppercase, letter-spaced label */
+.eyebrow {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--roast);
+}
+
+/* Animated underline for nav links */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 2px;
+  width: 100%;
+  border-radius: 1px;
+  background: var(--roast);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s var(--ease-out-soft);
+}
+.nav-link:hover::after,
+.nav-link:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ────────────────────────────────────────────────────────────────
+   Entrance animations
+   ──────────────────────────────────────────────────────────────── */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* On-load stagger (hero etc.) */
+.rise {
+  opacity: 0;
+  animation: rise 0.7s var(--ease-out-soft) forwards;
+}
+.rise-1 { animation-delay: 0.05s; }
+.rise-2 { animation-delay: 0.15s; }
+.rise-3 { animation-delay: 0.25s; }
+.rise-4 { animation-delay: 0.4s; }
+.rise-5 { animation-delay: 0.55s; }
+
+/* Scroll-triggered reveal (paired with components/Reveal.tsx) */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.8s var(--ease-out-soft),
+    transform 0.8s var(--ease-out-soft);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ────────────────────────────────────────────────────────────────
+   Hand-drawn underline (draws itself in)
+   ──────────────────────────────────────────────────────────────── */
+.squiggle {
+  position: absolute;
+  left: -2%;
+  bottom: -0.14em;
+  width: 104%;
+  height: 0.3em;
+  color: var(--roast);
+  overflow: visible;
+}
+.squiggle path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-squiggle 0.9s 0.6s var(--ease-out-soft) forwards;
+}
+@keyframes draw-squiggle {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────
+   Coffee steam
+   ──────────────────────────────────────────────────────────────── */
+.steam path {
+  opacity: 0;
+  animation: steam 3.2s ease-in-out infinite;
+}
+.steam path:nth-child(2) {
+  animation-delay: 1.1s;
+}
+.steam path:nth-child(3) {
+  animation-delay: 2.2s;
+}
+@keyframes steam {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  30% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────
+   Marquee strip
+   ──────────────────────────────────────────────────────────────── */
+.marquee {
+  overflow: hidden;
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 36s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────
+   Floating supporter notes (hero)
+   ──────────────────────────────────────────────────────────────── */
+@keyframes bob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.note-float-1 { animation: bob 6s ease-in-out infinite; }
+.note-float-2 { animation: bob 7s ease-in-out 0.8s infinite; }
+.note-float-3 { animation: bob 8s ease-in-out 1.6s infinite; }
+
+.note-card {
+  transition:
+    transform 0.35s var(--ease-out-soft),
+    box-shadow 0.35s var(--ease-out-soft);
+}
+.note-card:hover {
+  transform: rotate(0deg) translateY(-6px) scale(1.03);
+  box-shadow: 0 2px 4px rgba(34, 26, 18, 0.06), 0 18px 44px -12px rgba(34, 26, 18, 0.22);
+}
+
+/* ────────────────────────────────────────────────────────────────
+   Supporter list rows
+   ──────────────────────────────────────────────────────────────── */
+.supporter-row {
+  transition:
+    background-color 0.2s ease,
+    transform 0.25s var(--ease-out-soft);
+}
+.supporter-row:hover {
+  background: var(--cream);
+  transform: translateX(4px);
+}
+
+/* ────────────────────────────────────────────────────────────────
+   Chrome
+   ──────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--latte-dark);
+  border-radius: 5px;
+  border: 2px solid var(--cream);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--mocha);
+}
+
+.Toastify__toast {
+  border-radius: 14px !important;
+  background: var(--ink) !important;
+  color: var(--cream) !important;
+  font-family: var(--font-instrument), system-ui, sans-serif !important;
+  box-shadow: 0 12px 32px -8px rgba(34, 26, 18, 0.4) !important;
+}
+.Toastify__progress-bar {
+  background: var(--roast) !important;
+}
+
+/* ────────────────────────────────────────────────────────────────
+   Reduced motion
+   ──────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .rise,
+  .steam path,
+  .marquee-track,
+  .note-float-1,
+  .note-float-2,
+  .note-float-3 {
+    animation: none;
+  }
+  .rise {
+    opacity: 1;
+  }
+  .squiggle path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .btn,
+  .card-hover,
+  .note-card,
+  .supporter-row {
+    transition: none;
+  }
 }
