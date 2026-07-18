@@ -55,6 +55,8 @@ const PaymentPage = ({ username }: { username: string }) => {
   });
   const [currentUser, setCurrentUser] = useState<User>({});
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [coverError, setCoverError] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -134,33 +136,38 @@ const PaymentPage = ({ username }: { username: string }) => {
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
       {/* ── Cover ──────────────────────────────────────────────── */}
-      <div className="relative w-full h-48 md:h-72 overflow-hidden bg-ink">
-        {currentUser.coverpic ? (
-          <img
-            className="w-full h-full object-cover"
-            src={currentUser.coverpic}
-            alt="Cover"
-          />
-        ) : (
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage:
-                "radial-gradient(rgba(250,246,238,0.22) 1.5px, transparent 1.5px)",
-              backgroundSize: "20px 20px",
-            }}
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent" />
+      <div className="relative w-full h-48 md:h-72 bg-ink">
+        {/* Clipped layer for the image/pattern so the avatar below can overhang */}
+        <div className="absolute inset-0 overflow-hidden">
+          {currentUser.coverpic && !coverError ? (
+            <img
+              className="w-full h-full object-cover"
+              src={currentUser.coverpic}
+              alt="Cover"
+              onError={() => setCoverError(true)}
+            />
+          ) : (
+            <div
+              className="w-full h-full"
+              style={{
+                backgroundImage:
+                  "radial-gradient(rgba(250,246,238,0.22) 1.5px, transparent 1.5px)",
+                backgroundSize: "20px 20px",
+              }}
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent" />
+        </div>
 
         {/* Avatar */}
         <div className="absolute -bottom-14 left-1/2 -translate-x-1/2">
           <div className="w-28 h-28 rounded-full border-4 border-cream overflow-hidden shadow-lift bg-paper">
-            {currentUser.profilepic ? (
+            {currentUser.profilepic && !avatarError ? (
               <img
                 className="w-full h-full object-cover"
                 src={currentUser.profilepic}
                 alt={username}
+                onError={() => setAvatarError(true)}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-4xl font-display font-bold bg-roast text-cream">
